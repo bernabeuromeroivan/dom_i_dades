@@ -39,3 +39,12 @@ En aquest tercer increment s'ha incorporat la creació i modificació d'incidèn
 * **Alta, edició i cancel·lació (`src/services/incidenciesService.js`):**
   * En crear (`crearIncidencia`), es genera un `id` únic i la `dataCreacio` actual.
   * En editar (`actualitzarIncidencia`), es conserven intactes l'`id` i la `dataCreacio` originals.
+
+---
+
+### Exercici 4 (E04) — Eliminació i filtre per estat (`v0.4.0`)
+En aquest quart increment s'han implementat l'eliminació segura amb confirmació i el filtratge dinàmic per estat des del llistat:
+
+* **Eliminació per ID estable (`src/services/incidenciesService.js`):** S'ha afegit `eliminarIncidencia(id)` que filtra l'array pel seu identificador únic (`inc.id !== id`), evitant dependre de l'índex de la fila renderitzada.
+* **Delegació d'esdeveniments a `#app` (`src/main.js`):** Els escoltadors `click` (sobre `data-action="eliminar"`, amb confirmació mitjançant `window.confirm`) i `change` (sobre `data-action="filtrar-estat"`) es registren una única vegada a `#app` fora de `render()`, garantint una sola execució per acció encara que es navegui repetidament entre vistes.
+* **Filtre per estat i distinció de resultats buits (`src/components/llistat.js`):** El selector permet filtrar per `tots`, `obert`, `en procés` i `tancat` calculant els resultats a partir de `getIncidencies()`. La vista diferencia clarament entre una llista global buida (*"No hi ha cap incidència registrada."*) i un filtre sense coincidències (*"No s'han trobat incidències amb l'estat..."*).

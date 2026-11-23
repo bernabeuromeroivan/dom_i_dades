@@ -6,6 +6,7 @@ import { Formulari } from "./components/formulari.js";
 import { getRutaActual } from "./router.js";
 
 const app = document.querySelector("#app");
+let filtreEstat = "tots";
 
 function validarDades(dades) {
   const errors = {};
@@ -52,7 +53,11 @@ function render() {
   const ruta = getRutaActual();
 
   if (ruta.vista === "llistat") {
-    pintarLayout(Llistat(getIncidencies()));
+    const totes = getIncidencies();
+    const filtrades = filtreEstat === "tots"
+      ? totes
+      : totes.filter((inc) => inc.estat === filtreEstat);
+    pintarLayout(Llistat(filtrades, filtreEstat, totes.length));
   } else if (ruta.vista === "nova") {
     pintarLayout(Formulari());
   } else if (ruta.vista === "editar") {
@@ -87,6 +92,12 @@ app.addEventListener("click", (e) => {
     eliminarIncidencia(id);
     render();
   }
+});
+
+app.addEventListener("change", (e) => {
+  if (e.target.dataset.action !== "filtrar-estat") return;
+  filtreEstat = e.target.value;
+  render();
 });
 
 app.addEventListener("submit", (e) => {

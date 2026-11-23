@@ -1,11 +1,12 @@
 import "./style.css";
-import { getIncidencies, getIncidenciaById, crearIncidencia, actualitzarIncidencia } from "./services/incidenciesService.js";
+import { getIncidencies, getIncidenciaById, crearIncidencia, actualitzarIncidencia, eliminarIncidencia } from "./services/incidenciesService.js";
 import { Llistat } from "./components/llistat.js";
 import { Detall } from "./components/Detall.js";
 import { Formulari } from "./components/formulari.js";
 import { getRutaActual } from "./router.js";
 
 const app = document.querySelector("#app");
+let filtreEstat = "tots";
 
 function validarDades(dades) {
   const errors = {};
@@ -52,7 +53,11 @@ function render() {
   const ruta = getRutaActual();
 
   if (ruta.vista === "llistat") {
-    pintarLayout(Llistat(getIncidencies()));
+    const totes = getIncidencies();
+    const filtrades = filtreEstat === "tots"
+      ? totes
+      : totes.filter((inc) => inc.estat === filtreEstat);
+    pintarLayout(Llistat(filtrades, filtreEstat, totes.length));
   } else if (ruta.vista === "nova") {
     pintarLayout(Formulari());
   } else if (ruta.vista === "editar") {
@@ -75,6 +80,25 @@ function render() {
     `);
   }
 }
+
+app.addEventListener("click", (e) => {
+  const botoEliminar = e.target.closest('[data-action="eliminar"]');
+  if (!botoEliminar) return;
+
+  const id = botoEliminar.dataset.id;
+  if (!id) return;
+
+  if (window.confirm(`Segur que vols eliminar la incidència ${id}?`)) {
+    eliminarIncidencia(id);
+    render();
+  }
+});
+
+app.addEventListener("change", (e) => {
+  if (e.target.dataset.action !== "filtrar-estat") return;
+  filtreEstat = e.target.value;
+  render();
+});
 
 app.addEventListener("submit", (e) => {
   if (e.target.id !== "form-incidencia") return;

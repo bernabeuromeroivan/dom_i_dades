@@ -82,3 +82,9 @@ export function actualitzarIncidencia(id, dades) {
   };
   return incidencies[pos];
 }
+
+export function eliminarIncidencia(id) {
+  const totalAbans = incidencies.length;
+  incidencies = incidencies.filter((inc) => inc.id !== id);
+  return incidencies.length < totalAbans;
+}

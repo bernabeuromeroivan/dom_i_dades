@@ -53,3 +53,32 @@ export function getIncidencies() {
 export function getIncidenciaById(id) {
   return incidencies.find((inc) => inc.id === id);
 }
+
+export function crearIncidencia(dades) {
+  const nova = {
+    id: `inc-${Date.now()}`,
+    titol: dades.titol.trim(),
+    descripcio: dades.descripcio.trim(),
+    estat: dades.estat,
+    prioritat: dades.prioritat,
+    assignat: dades.assignat.trim(),
+    dataCreacio: new Date().toISOString().slice(0, 10),
+  };
+  incidencies.push(nova);
+  return nova;
+}
+
+export function actualitzarIncidencia(id, dades) {
+  const pos = incidencies.findIndex((inc) => inc.id === id);
+  if (pos === -1) return null;
+
+  incidencies[pos] = {
+    ...incidencies[pos],
+    titol: dades.titol.trim(),
+    descripcio: dades.descripcio.trim(),
+    estat: dades.estat,
+    prioritat: dades.prioritat,
+    assignat: dades.assignat.trim(),
+  };
+  return incidencies[pos];
+}

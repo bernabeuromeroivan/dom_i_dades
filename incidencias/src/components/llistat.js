@@ -14,6 +14,7 @@ export function Llistat(llista) {
         <td>${llista[i].prioritat}</td>
         <td>${llista[i].assignat}</td>
         <td>${llista[i].dataCreacio}</td>
+        <td><a href="#/incidencies/${llista[i].id}">Veure detall</a></td>
       </tr>
     `;
   }
@@ -30,6 +31,7 @@ export function Llistat(llista) {
             <th>Prioritat</th>
             <th>Assignat</th>
             <th>Data</th>
+            <th>Accions</th>
           </tr>
         </thead>
         <tbody>

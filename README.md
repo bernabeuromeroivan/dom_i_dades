@@ -19,3 +19,11 @@ En lugar de tener todo el código mezclado en un único script o escrito directa
   * En `main.js` importo tanto el servicio de datos (`getIncidencies`) como el componente (`Llistat`) y pinto en `#app` mediante `innerHTML` una cabecera común (`<header class="main-header">`) seguida del listado de incidencias.
 
 ---
+
+### Exercici 2 (E02) — Navegació i vista de detall (`v0.2.0`)
+En aquest segon increment s'ha dotat l'aplicació de navegació mitjançant rutes *hash* i d'una vista individual per consultar tota la informació de cada incidència:
+
+* **Encaminador per *hash* (`src/router.js`):** S'ha implementat la funció `getRutaActual()` que llegeix `window.location.hash` per interpretar les rutes `#/incidencies` (llistat principal), `#/incidencies/ID` (extracció del paràmetre dinàmic `ID` per al detall) i redirigir automàticament quan s'accedeix a l'arrel sense *hash*.
+* **Gestió d'esdeveniments a `src/main.js`:** L'escoltador `window.addEventListener("hashchange", render)` es registra una única vegada en arrencar l'aplicació, mantenint sempre fixa la capçalera i la navegació comuna entre vistes.
+* **Vista de detall (`src/components/Detall.js`):** Nou component que rep una incidència obtinguda mitjançant `getIncidenciaById(id)` i en renderitza tots els camps (`id`, `titol`, `descripcio`, `estat`, `prioritat`, `assignat` i `dataCreacio`), juntament amb un enllaç de retorn al llistat.
+* **Control de rutes i IDs inexistents:** Tant si s'introdueix una ruta no reconeguda (p. ex. `#/ruta-falsa`) com un identificador que no existeix al servei (p. ex. `#/incidencies/inc-999`), la interfície mostra un missatge informatiu clar i un botó per tornar a `#/incidencies`.

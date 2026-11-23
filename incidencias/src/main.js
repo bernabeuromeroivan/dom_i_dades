@@ -1,5 +1,5 @@
 import "./style.css";
-import { getIncidencies, getIncidenciaById, crearIncidencia, actualitzarIncidencia } from "./services/incidenciesService.js";
+import { getIncidencies, getIncidenciaById, crearIncidencia, actualitzarIncidencia, eliminarIncidencia } from "./services/incidenciesService.js";
 import { Llistat } from "./components/llistat.js";
 import { Detall } from "./components/Detall.js";
 import { Formulari } from "./components/formulari.js";
@@ -75,6 +75,19 @@ function render() {
     `);
   }
 }
+
+app.addEventListener("click", (e) => {
+  const botoEliminar = e.target.closest('[data-action="eliminar"]');
+  if (!botoEliminar) return;
+
+  const id = botoEliminar.dataset.id;
+  if (!id) return;
+
+  if (window.confirm(`Segur que vols eliminar la incidència ${id}?`)) {
+    eliminarIncidencia(id);
+    render();
+  }
+});
 
 app.addEventListener("submit", (e) => {
   if (e.target.id !== "form-incidencia") return;

@@ -16,7 +16,8 @@ export function Llistat(llista) {
         <td>${llista[i].dataCreacio}</td>
         <td>
           <a href="#/incidencies/${llista[i].id}">Veure</a> | 
-          <a href="#/incidencies/${llista[i].id}/editar">Editar</a>
+          <a href="#/incidencies/${llista[i].id}/editar">Editar</a> | 
+          <button type="button" data-action="eliminar" data-id="${llista[i].id}" class="btn-cancel" style="padding: 4px 8px; cursor: pointer;">Eliminar</button>
         </td>
       </tr>
     `;

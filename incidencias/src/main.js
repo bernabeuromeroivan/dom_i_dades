@@ -1,5 +1,5 @@
 import "./style.css";
-import { getIncidencies, getIncidenciaById, crearIncidencia } from "./services/incidenciesService.js";
+import { getIncidencies, getIncidenciaById, crearIncidencia, actualitzarIncidencia } from "./services/incidenciesService.js";
 import { Llistat } from "./components/llistat.js";
 import { Detall } from "./components/Detall.js";
 import { Formulari } from "./components/formulari.js";
@@ -55,6 +55,13 @@ function render() {
     pintarLayout(Llistat(getIncidencies()));
   } else if (ruta.vista === "nova") {
     pintarLayout(Formulari());
+  } else if (ruta.vista === "editar") {
+    const incidencia = getIncidenciaById(ruta.id);
+    if (!incidencia) {
+      pintarLayout(Detall(null));
+    } else {
+      pintarLayout(Formulari(incidencia, {}, true));
+    }
   } else if (ruta.vista === "detall") {
     pintarLayout(Detall(getIncidenciaById(ruta.id)));
   } else {
@@ -73,6 +80,9 @@ app.addEventListener("submit", (e) => {
   if (e.target.id !== "form-incidencia") return;
   e.preventDefault();
 
+  const idEdicio = e.target.dataset.id;
+  const esEdicio = Boolean(idEdicio);
+
   const formData = new FormData(e.target);
   const dades = {
     titol: formData.get("titol") ?? "",
@@ -84,12 +94,17 @@ app.addEventListener("submit", (e) => {
 
   const errors = validarDades(dades);
   if (Object.keys(errors).length > 0) {
-    pintarLayout(Formulari({ valors: dades, errors, esEdicio: false }));
+    pintarLayout(Formulari({ ...dades, id: idEdicio }, errors, esEdicio));
     return;
   }
 
-  const nova = crearIncidencia(dades);
-  window.location.hash = `#/incidencies/${nova.id}`;
+  if (esEdicio) {
+    actualitzarIncidencia(idEdicio, dades);
+    window.location.hash = `#/incidencies/${idEdicio}`;
+  } else {
+    const nova = crearIncidencia(dades);
+    window.location.hash = `#/incidencies/${nova.id}`;
+  }
 });
 
 window.addEventListener("hashchange", render);

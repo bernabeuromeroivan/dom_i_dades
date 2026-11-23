@@ -14,7 +14,10 @@ export function Llistat(llista) {
         <td>${llista[i].prioritat}</td>
         <td>${llista[i].assignat}</td>
         <td>${llista[i].dataCreacio}</td>
-        <td><a href="#/incidencies/${llista[i].id}">Veure detall</a></td>
+        <td>
+          <a href="#/incidencies/${llista[i].id}">Veure</a> | 
+          <a href="#/incidencies/${llista[i].id}/editar">Editar</a>
+        </td>
       </tr>
     `;
   }

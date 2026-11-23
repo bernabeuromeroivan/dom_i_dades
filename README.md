@@ -27,3 +27,15 @@ En aquest segon increment s'ha dotat l'aplicació de navegació mitjançant rute
 * **Gestió d'esdeveniments a `src/main.js`:** L'escoltador `window.addEventListener("hashchange", render)` es registra una única vegada en arrencar l'aplicació, mantenint sempre fixa la capçalera i la navegació comuna entre vistes.
 * **Vista de detall (`src/components/Detall.js`):** Nou component que rep una incidència obtinguda mitjançant `getIncidenciaById(id)` i en renderitza tots els camps (`id`, `titol`, `descripcio`, `estat`, `prioritat`, `assignat` i `dataCreacio`), juntament amb un enllaç de retorn al llistat.
 * **Control de rutes i IDs inexistents:** Tant si s'introdueix una ruta no reconeguda (p. ex. `#/ruta-falsa`) com un identificador que no existeix al servei (p. ex. `#/incidencies/inc-999`), la interfície mostra un missatge informatiu clar i un botó per tornar a `#/incidencies`.
+
+---
+
+### Exercici 3 (E03) — Formulari d'alta i edició (`v0.3.0`)
+En aquest tercer increment s'ha incorporat la creació i modificació d'incidències reutilitzant un mateix component de formulari:
+
+* **Rutes d'alta i edició (`src/router.js`):** S'han afegit `#/incidencies/nova` (comprovada abans d'interpretar un segment com a ID) i `#/incidencies/ID/editar`.
+* **Component reutilitzable (`src/components/formulari.js`):** La funció `Formulari(valors, errors, esEdicio)` renderitza tant el formulari de creació com el d'edició, associant cada `<label>` al seu camp per garantir la navegació completa amb teclat.
+* **Validació i conservació de valors (`src/main.js`):** L'esdeveniment `submit` (amb `e.preventDefault()`) es delega a `#app` una única vegada. Es valida que títol, descripció i persona assignada no estiguin buits ni continguin només espais (`.trim()`), i que estat i prioritat tinguin valors vàlids. Si hi ha errors, es mostren sota cada camp mantenint els valors introduïts.
+* **Alta, edició i cancel·lació (`src/services/incidenciesService.js`):**
+  * En crear (`crearIncidencia`), es genera un `id` únic i la `dataCreacio` actual.
+  * En editar (`actualitzarIncidencia`), es conserven intactes l'`id` i la `dataCreacio` originals.

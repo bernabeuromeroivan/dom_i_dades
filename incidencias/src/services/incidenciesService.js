@@ -1,4 +1,6 @@
-let incidencies = [
+const STORAGE_KEY = "ia2_incidencies_v1";
+
+const DADES_MOSTRA = [
   {
     id: "inc-1",
     titol: "Ordinador no arrenca",
@@ -46,6 +48,22 @@ let incidencies = [
   },
 ];
 
+function desarIncidencies(llista) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(llista));
+}
+
+function carregarIncidencies() {
+  const guardat = localStorage.getItem(STORAGE_KEY);
+  if (guardat === null) {
+    const inicials = [...DADES_MOSTRA];
+    desarIncidencies(inicials);
+    return inicials;
+  }
+  return JSON.parse(guardat);
+}
+
+let incidencies = carregarIncidencies();
+
 export function getIncidencies() {
   return [...incidencies];
 }
@@ -65,6 +83,7 @@ export function crearIncidencia(dades) {
     dataCreacio: new Date().toISOString().slice(0, 10),
   };
   incidencies.push(nova);
+  desarIncidencies(incidencies);
   return nova;
 }
 
@@ -80,11 +99,16 @@ export function actualitzarIncidencia(id, dades) {
     prioritat: dades.prioritat,
     assignat: dades.assignat.trim(),
   };
+  desarIncidencies(incidencies);
   return incidencies[pos];
 }
 
 export function eliminarIncidencia(id) {
   const totalAbans = incidencies.length;
   incidencies = incidencies.filter((inc) => inc.id !== id);
-  return incidencies.length < totalAbans;
+  if (incidencies.length < totalAbans) {
+    desarIncidencies(incidencies);
+    return true;
+  }
+  return false;
 }

@@ -1,7 +1,7 @@
 import "./style.css";
 import { getIncidencies, getIncidenciaById, crearIncidencia, actualitzarIncidencia, eliminarIncidencia, errorStorage } from "./services/incidenciesService.js";
 import { Llistat } from "./components/llistat.js";
-import { Detall } from "./components/Detall.js";
+import { Detall } from "./components/detall.js";
 import { Formulari } from "./components/formulari.js";
 import { getRutaActual } from "./router.js";
 

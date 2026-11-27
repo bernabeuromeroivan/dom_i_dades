@@ -1,5 +1,5 @@
 import "./style.css";
-import { getIncidencies, getIncidenciaById, crearIncidencia, actualitzarIncidencia, eliminarIncidencia } from "./services/incidenciesService.js";
+import { getIncidencies, getIncidenciaById, crearIncidencia, actualitzarIncidencia, eliminarIncidencia, errorStorage } from "./services/incidenciesService.js";
 import { Llistat } from "./components/llistat.js";
 import { Detall } from "./components/Detall.js";
 import { Formulari } from "./components/formulari.js";
@@ -10,29 +10,19 @@ let filtreEstat = "tots";
 
 function validarDades(dades) {
   const errors = {};
-  const estatsValids = ["obert", "en procés", "tancat"];
-  const prioritatsValides = ["baixa", "mitjana", "alta"];
-
-  if (!dades.titol || dades.titol.trim().length < 3) {
-    errors.titol = "El títol és obligatori (mínim 3 caràcters).";
-  }
-  if (!dades.descripcio || dades.descripcio.trim().length < 5) {
-    errors.descripcio = "La descripció és obligatòria (mínim 5 caràcters).";
-  }
-  if (!dades.assignat || dades.assignat.trim().length < 2) {
-    errors.assignat = "Cal indicar la persona assignada.";
-  }
-  if (!estatsValids.includes(dades.estat)) {
-    errors.estat = "Selecciona un estat vàlid.";
-  }
-  if (!prioritatsValides.includes(dades.prioritat)) {
-    errors.prioritat = "Selecciona una prioritat vàlida.";
-  }
-
+  if (!dades.titol || dades.titol.trim().length < 3) errors.titol = "El títol és obligatori (mínim 3 caràcters).";
+  if (!dades.descripcio || dades.descripcio.trim().length < 5) errors.descripcio = "La descripció és obligatòria (mínim 5 caràcters).";
+  if (!dades.assignat || dades.assignat.trim().length < 2) errors.assignat = "Cal indicar la persona assignada.";
+  if (!["obert", "en procés", "tancat"].includes(dades.estat)) errors.estat = "Selecciona un estat vàlid.";
+  if (!["baixa", "mitjana", "alta"].includes(dades.prioritat)) errors.prioritat = "Selecciona una prioritat vàlida.";
   return errors;
 }
 
 function pintarLayout(contingutVista) {
+  const avisError = errorStorage
+    ? `<p style="background: #fdecea; color: #b71c1c; padding: 10px; border-radius: 5px; margin-bottom: 15px;"><strong>Avís:</strong> ${errorStorage}</p>`
+    : "";
+
   app.innerHTML = `
     <div class="container">
       <header class="main-header">
@@ -43,6 +33,7 @@ function pintarLayout(contingutVista) {
         </nav>
       </header>
       <main>
+        ${avisError}
         ${contingutVista}
       </main>
     </div>
@@ -54,27 +45,19 @@ function render() {
 
   if (ruta.vista === "llistat") {
     const totes = getIncidencies();
-    const filtrades = filtreEstat === "tots"
-      ? totes
-      : totes.filter((inc) => inc.estat === filtreEstat);
+    const filtrades = filtreEstat === "tots" ? totes : totes.filter((inc) => inc.estat === filtreEstat);
     pintarLayout(Llistat(filtrades, filtreEstat, totes.length));
   } else if (ruta.vista === "nova") {
     pintarLayout(Formulari());
   } else if (ruta.vista === "editar") {
     const incidencia = getIncidenciaById(ruta.id);
-    if (!incidencia) {
-      pintarLayout(Detall(null));
-    } else {
-      pintarLayout(Formulari(incidencia, {}, true));
-    }
+    pintarLayout(incidencia ? Formulari(incidencia, {}, true) : Detall(null));
   } else if (ruta.vista === "detall") {
     pintarLayout(Detall(getIncidenciaById(ruta.id)));
   } else {
     pintarLayout(`
       <div class="table-responsive" style="padding: 20px;">
         <h2>404 - Ruta no trobada</h2>
-        <p>La pàgina que cerques no existeix.</p>
-        <br>
         <a href="#/incidencies" class="btn-save" style="text-decoration: none;">Tornar al llistat</a>
       </div>
     `);
@@ -82,22 +65,19 @@ function render() {
 }
 
 app.addEventListener("click", (e) => {
-  const botoEliminar = e.target.closest('[data-action="eliminar"]');
-  if (!botoEliminar) return;
-
-  const id = botoEliminar.dataset.id;
-  if (!id) return;
-
-  if (window.confirm(`Segur que vols eliminar la incidència ${id}?`)) {
-    eliminarIncidencia(id);
+  const boto = e.target.closest('[data-action="eliminar"]');
+  if (!boto) return;
+  if (window.confirm(`Segur que vols eliminar la incidència ${boto.dataset.id}?`)) {
+    eliminarIncidencia(boto.dataset.id);
     render();
   }
 });
 
 app.addEventListener("change", (e) => {
-  if (e.target.dataset.action !== "filtrar-estat") return;
-  filtreEstat = e.target.value;
-  render();
+  if (e.target.dataset.action === "filtrar-estat") {
+    filtreEstat = e.target.value;
+    render();
+  }
 });
 
 app.addEventListener("submit", (e) => {
@@ -106,8 +86,8 @@ app.addEventListener("submit", (e) => {
 
   const idEdicio = e.target.dataset.id;
   const esEdicio = Boolean(idEdicio);
-
   const formData = new FormData(e.target);
+
   const dades = {
     titol: formData.get("titol") ?? "",
     descripcio: formData.get("descripcio") ?? "",

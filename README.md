@@ -48,3 +48,8 @@ En aquest quart increment s'han implementat l'eliminació segura amb confirmaci�
 * **Eliminació per ID estable (`src/services/incidenciesService.js`):** S'ha afegit `eliminarIncidencia(id)` que filtra l'array pel seu identificador únic (`inc.id !== id`), evitant dependre de l'índex de la fila renderitzada.
 * **Delegació d'esdeveniments a `#app` (`src/main.js`):** Els escoltadors `click` (sobre `data-action="eliminar"`, amb confirmació mitjançant `window.confirm`) i `change` (sobre `data-action="filtrar-estat"`) es registren una única vegada a `#app` fora de `render()`, garantint una sola execució per acció encara que es navegui repetidament entre vistes.
 * **Filtre per estat i distinció de resultats buits (`src/components/llistat.js`):** El selector permet filtrar per `tots`, `obert`, `en procés` i `tancat` calculant els resultats a partir de `getIncidencies()`. La vista diferencia clarament entre una llista global buida (*"No hi ha cap incidència registrada."*) i un filtre sense coincidències (*"No s'han trobat incidències amb l'estat..."*).
+
+### Exercici 5 (E05) — Persistència i versió final (`v1.0.0`)
+* **Persistència local (`src/services/incidenciesService.js`):** Les incidències es desen a `localStorage` (`ia2_incidencies_v1`) després de crear, editar o eliminar. Les dades inicials només es carreguen si la clau no existeix, respectant una llista buida `[]`.
+* **Gestió d'errors (`src/services/incidenciesService.js` i `src/main.js`):** Mitjançant `try/catch` es capturen errors de lectura (`JSON` malmès) i escriptura, mostrant un avís a la interfície sense sobreescriure les dades originals.
+* **Compilació:** Validat amb `npm run build` i `npm run preview`.
